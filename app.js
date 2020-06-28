@@ -29,12 +29,31 @@ if(process.env.NODE_ENV === 'development'){
 }
 
 
-//Handlebars helpers
-const {formatDate} = require('./helpers/hbs')
-
-//Handlebars
-app.engine('.hbs', exphbs({helpers:{formatDate} ,defaultLayout:'main' ,extname: '.hbs'}));
-app.set('view engine', '.hbs');
+// Handlebars Helpers
+const {
+    formatDate,
+    stripTags,
+    truncate,
+    editIcon,
+    select,
+  } = require('./helpers/hbs')
+  
+  // Handlebars
+  app.engine(
+    '.hbs',
+    exphbs({
+      helpers: {
+        formatDate,
+        stripTags,
+        truncate,
+        editIcon,
+        select,
+      },
+      defaultLayout: 'main',
+      extname: '.hbs',
+    })
+  )
+app.set('view engine', '.hbs')
 
 // session middleware
 app.use(session({
@@ -47,6 +66,12 @@ app.use(session({
 // Passport middleware
 app.use(passport.initialize())
 app.use(passport.session())
+
+//Set Global Var
+app.use(function(req,res,next){
+    res.locals.user = req.user || null
+    next()
+})
 
 //Static folder
 app.use(express.static(path.join(__dirname, 'public')))
